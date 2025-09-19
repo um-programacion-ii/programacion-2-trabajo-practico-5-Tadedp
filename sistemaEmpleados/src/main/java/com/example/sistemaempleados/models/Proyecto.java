@@ -33,6 +33,6 @@ public class Proyecto {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
 
-    @Column()
-    private Set<String> empleados = new HashSet<>();
+    @ManyToMany(mappedBy = "proyectos")
+    private Set<Empleado> empleados = new HashSet<>();
 }

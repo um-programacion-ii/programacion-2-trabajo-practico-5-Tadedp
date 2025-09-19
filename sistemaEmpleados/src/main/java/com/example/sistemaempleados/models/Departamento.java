@@ -22,6 +22,6 @@ public class Departamento {
     @Column()
     private String descripcion;
 
-    @Column()
-    private List<String> empleados = new ArrayList<>();
+    @OneToMany(mappedBy = "departamento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Empleado> empleados = new ArrayList<>();
 }
