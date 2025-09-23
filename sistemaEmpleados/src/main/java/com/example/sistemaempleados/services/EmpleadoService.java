@@ -9,8 +9,7 @@ import java.util.List;
 public interface EmpleadoService {
     Empleado guardar(Empleado empleado);
     Empleado buscarPorId(Long id);
-    List<Empleado> buscarPorDepartamento(Departamento departamento);
-    List<Empleado> buscarPorNombreDepartamento(String nombreDepartamento);
+    List<Empleado> buscarPorDepartamento(String nombreDepartamento);
     List<Empleado> buscarPorContratados(LocalDate fecha);
     List<Empleado> buscarPorRangoSalario(Double salarioMin, Double salarioMax);
     Double obtenerSalarioPromedioPorDepartamento(Long departamentoId);

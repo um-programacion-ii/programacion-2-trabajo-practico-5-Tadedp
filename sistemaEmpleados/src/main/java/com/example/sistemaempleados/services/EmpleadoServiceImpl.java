@@ -35,13 +35,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     @Override
-    public List<Empleado> buscarPorDepartamento(Departamento departamento) {
-        return empleadoRepository.findByDepartamento(departamento);
-    }
-
-    @Override
-    public List<Empleado> buscarPorNombreDepartamento(String nombreDepartamento) {
-        return empleadoRepository.findByNombreDepartamento(nombreDepartamento);
+    public List<Empleado> buscarPorDepartamento(String nombreDepartamento) {
+        return empleadoRepository.findByDepartamento(nombreDepartamento);
     }
 
     @Override
