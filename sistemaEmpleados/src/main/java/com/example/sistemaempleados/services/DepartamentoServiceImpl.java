@@ -5,6 +5,7 @@ import com.example.sistemaempleados.exceptions.NombreDuplicadoException;
 import com.example.sistemaempleados.models.Departamento;
 import com.example.sistemaempleados.repositories.DepartamentoRepository;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,18 +24,32 @@ public class DepartamentoServiceImpl implements DepartamentoService {
         if (departamentoRepository.findByNombre(departamento.getNombre()).isPresent()) {
             throw new NombreDuplicadoException("El nombre ya está registrado: " + departamento.getNombre());
         }
-        return departamentoRepository.save(departamento);
+        Departamento savedDepartamento = departamentoRepository.save(departamento);
+
+        Hibernate.initialize(savedDepartamento.getEmpleados());
+
+        return savedDepartamento;
     }
 
     @Override
     public Departamento buscarPorId(Long id) {
-        return departamentoRepository.findById(id)
+        Departamento departamento = departamentoRepository.findById(id)
                 .orElseThrow(() -> new DepartamentoNoEncontradoException("Departamento no encontrado con ID: " + id));
+
+        Hibernate.initialize(departamento.getEmpleados());
+
+        return departamento;
     }
 
     @Override
     public List<Departamento> obtenerTodos() {
-        return departamentoRepository.findAll();
+        List<Departamento> departamentos = departamentoRepository.findAll();
+
+        departamentos.forEach(departamento -> {
+            Hibernate.initialize(departamento.getEmpleados());
+        });
+
+        return departamentos;
     }
 
     @Override
@@ -43,7 +58,11 @@ public class DepartamentoServiceImpl implements DepartamentoService {
             throw new DepartamentoNoEncontradoException("Departamento no encontrado con ID: " + id);
         }
         departamento.setId(id);
-        return departamentoRepository.save(departamento);
+        Departamento updatedDepartamento = departamentoRepository.save(departamento);
+
+        Hibernate.initialize(updatedDepartamento.getEmpleados());
+
+        return updatedDepartamento;
     }
 
     @Override

@@ -8,9 +8,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "departamentos")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"empleados"})
+@ToString(exclude = {"empleados"})
 public class Departamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

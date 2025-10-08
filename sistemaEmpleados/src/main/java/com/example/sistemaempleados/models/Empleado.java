@@ -1,9 +1,7 @@
 package com.example.sistemaempleados.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -11,9 +9,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "empleados")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"departamento", "proyectos"})
+@ToString(exclude = {"departamento", "proyectos"})
 public class Empleado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +40,7 @@ public class Empleado {
     @JoinColumn(name = "departamento_id")
     private Departamento departamento;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "empleado_proyecto",
             joinColumns = @JoinColumn(name = "empleado_id"),

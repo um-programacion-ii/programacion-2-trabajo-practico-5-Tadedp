@@ -9,11 +9,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "proyectos")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"empleados"})
+@ToString(exclude = {"empleados"})
 public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,6 @@ public class Proyecto {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
 
-    @ManyToMany(mappedBy = "proyectos")
+    @ManyToMany(mappedBy = "proyectos", fetch = FetchType.LAZY)
     private Set<Empleado> empleados = new HashSet<>();
 }

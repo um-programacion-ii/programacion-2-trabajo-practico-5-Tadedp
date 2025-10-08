@@ -1,6 +1,8 @@
 package com.example.sistemaempleados.controllers;
 
+import com.example.sistemaempleados.dtos.ProyectoCompletoDTO;
 import com.example.sistemaempleados.exceptions.ProyectoNoEncontradoException;
+import com.example.sistemaempleados.mappers.ProyectoDTOMapper;
 import com.example.sistemaempleados.models.Proyecto;
 import com.example.sistemaempleados.services.ProyectoService;
 import jakarta.validation.Valid;
@@ -20,28 +22,39 @@ public class ProyectoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Proyecto>> obtenerTodos() {
-        return ResponseEntity.ok(proyectoService.obtenerTodos());
+    public ResponseEntity<List<ProyectoCompletoDTO>> obtenerTodos() {
+        return ResponseEntity.ok(
+                proyectoService.obtenerTodos()
+                        .stream()
+                        .map(ProyectoDTOMapper::toDTOCompleto)
+                        .toList()
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Proyecto> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<ProyectoCompletoDTO> obtenerPorId(@PathVariable Long id){
         try {
-            return ResponseEntity.ok(proyectoService.buscarPorId(id));
+            return ResponseEntity.ok(
+                    ProyectoDTOMapper.toDTOCompleto(proyectoService.buscarPorId(id))
+            );
         } catch (ProyectoNoEncontradoException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @PostMapping
-    public ResponseEntity<Proyecto> crear(@Valid @RequestBody Proyecto proyecto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(proyectoService.guardar(proyecto));
+    public ResponseEntity<ProyectoCompletoDTO> crear(@Valid @RequestBody Proyecto proyecto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ProyectoDTOMapper.toDTOCompleto(proyectoService.guardar(proyecto))
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Proyecto> actualizar(@PathVariable Long id, @RequestBody Proyecto proyecto){
+    public ResponseEntity<ProyectoCompletoDTO> actualizar(@PathVariable Long id, @RequestBody Proyecto proyecto){
         try {
-            return ResponseEntity.ok(proyectoService.actualizar(id, proyecto));
+            return ResponseEntity.ok(
+                    ProyectoDTOMapper.toDTOCompleto(proyectoService.actualizar(id, proyecto))
+            );
         } catch (ProyectoNoEncontradoException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -58,7 +71,12 @@ public class ProyectoController {
     }
 
     @GetMapping("/activos")
-    public ResponseEntity<List<Proyecto>> obtenerActivos(){
-        return ResponseEntity.ok(proyectoService.obtenerProyectosActivos());
+    public ResponseEntity<List<ProyectoCompletoDTO>> obtenerActivos(){
+        return ResponseEntity.ok(
+                proyectoService.obtenerProyectosActivos()
+                        .stream()
+                        .map(ProyectoDTOMapper::toDTOCompleto)
+                        .toList()
+        );
     }
 }
