@@ -1,7 +1,9 @@
 package com.example.sistemaempleados.controllers;
 
+import com.example.sistemaempleados.dtos.DepartamentoCompletoDTO;
 import com.example.sistemaempleados.exceptions.DepartamentoNoEncontradoException;
 import com.example.sistemaempleados.exceptions.NombreDuplicadoException;
+import com.example.sistemaempleados.mappers.DepartamentoDTOMapper;
 import com.example.sistemaempleados.models.Departamento;
 import com.example.sistemaempleados.services.DepartamentoService;
 import jakarta.validation.Valid;
@@ -21,32 +23,43 @@ public class DepartamentoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Departamento>> obtenerTodos() {
-        return ResponseEntity.ok(departamentoService.obtenerTodos());
+    public ResponseEntity<List<DepartamentoCompletoDTO>> obtenerTodos() {
+        return ResponseEntity.ok(
+                departamentoService.obtenerTodos()
+                        .stream()
+                        .map(DepartamentoDTOMapper::toDTOCompleto)
+                        .toList()
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Departamento> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<DepartamentoCompletoDTO> obtenerPorId(@PathVariable Long id){
         try {
-            return ResponseEntity.ok(departamentoService.buscarPorId(id));
+            return ResponseEntity.ok(
+                    DepartamentoDTOMapper.toDTOCompleto(departamentoService.buscarPorId(id))
+            );
         } catch (DepartamentoNoEncontradoException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @PostMapping
-    public ResponseEntity<Departamento> crear(@Valid @RequestBody Departamento departamento){
+    public ResponseEntity<DepartamentoCompletoDTO> crear(@Valid @RequestBody Departamento departamento){
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(departamentoService.guardar(departamento));
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    DepartamentoDTOMapper.toDTOCompleto(departamentoService.guardar(departamento))
+            );
         } catch (NombreDuplicadoException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Departamento> actualizar(@PathVariable Long id, @RequestBody Departamento departamento){
+    public ResponseEntity<DepartamentoCompletoDTO> actualizar(@PathVariable Long id, @RequestBody Departamento departamento){
         try {
-            return ResponseEntity.ok(departamentoService.actualizar(id, departamento));
+            return ResponseEntity.ok(
+                    DepartamentoDTOMapper.toDTOCompleto(departamentoService.actualizar(id, departamento))
+            );
         } catch (DepartamentoNoEncontradoException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

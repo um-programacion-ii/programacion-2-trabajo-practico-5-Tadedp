@@ -4,6 +4,7 @@ import com.example.sistemaempleados.exceptions.ProyectoNoEncontradoException;
 import com.example.sistemaempleados.models.Proyecto;
 import com.example.sistemaempleados.repositories.ProyectoRepository;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,23 +21,43 @@ public class ProyectoServiceImpl implements ProyectoService {
 
     @Override
     public Proyecto guardar(Proyecto proyecto) {
-        return proyectoRepository.save(proyecto);
+        Proyecto savedProyecto = proyectoRepository.save(proyecto);
+
+        Hibernate.initialize(savedProyecto.getEmpleados());
+
+        return savedProyecto;
     }
 
     @Override
     public Proyecto buscarPorId(Long id) {
-        return proyectoRepository.findById(id)
+        Proyecto proyecto = proyectoRepository.findById(id)
                 .orElseThrow(() -> new ProyectoNoEncontradoException("Proyecto no encontrado con ID: " + id));
+
+        Hibernate.initialize(proyecto.getEmpleados());
+
+        return proyecto;
     }
 
     @Override
     public List<Proyecto> obtenerProyectosActivos() {
-        return proyectoRepository.findByFechaFinAfter(LocalDate.now());
+        List<Proyecto> proyectos = proyectoRepository.findByFechaFinAfter(LocalDate.now());
+
+        proyectos.forEach(proyecto -> {
+            Hibernate.initialize(proyecto.getEmpleados());
+        });
+
+        return proyectos;
     }
 
     @Override
     public List<Proyecto> obtenerTodos() {
-        return proyectoRepository.findAll();
+        List<Proyecto> proyectos = proyectoRepository.findAll();
+
+        proyectos.forEach(proyecto -> {
+            Hibernate.initialize(proyecto.getEmpleados());
+        });
+
+        return proyectos;
     }
 
     @Override
@@ -45,7 +66,11 @@ public class ProyectoServiceImpl implements ProyectoService {
             throw new ProyectoNoEncontradoException("Proyecto no encontrado con ID: " + id);
         }
         proyecto.setId(id);
-        return proyectoRepository.save(proyecto);
+        Proyecto updatedProyecto = proyectoRepository.save(proyecto);
+
+        Hibernate.initialize(updatedProyecto.getEmpleados());
+
+        return updatedProyecto;
     }
 
     @Override
